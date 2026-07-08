@@ -48,67 +48,61 @@ function JuegoUneHanzi({ hskNivel, volver }) {
   useEffect(() => {
     if (seleccionHanzi && seleccionPinyin) {
       if (seleccionHanzi.id === seleccionPinyin.id) {
-        // MATCH CORRECTO
-        setEstadoMatch('correcto');
+        // ¡MATCH CORRECTO!
+        const idMatch = seleccionHanzi.id;
         setAciertos(prev => prev + 1);
 
-        // 1. Inicia animación de salida
-        setTimeout(() => {
-          setIdsSaliendo(prev => [...prev, seleccionHanzi.id]);
-        }, 300);
+        // 1. Marcamos este par en la lista de salida INMEDIATAMENTE
+        setIdsSaliendo(prev => [...prev, idMatch]);
 
-        // 2. Ejecuta el recambio usando el ESTADO AGRUPADO
+        // 2. ¡LIBERAMOS TUS DEDOS AL INSTANTE! 
+        // Al vaciar las selecciones YA puedes hacer clic en cualquier otro par del tablero
+        setSeleccionHanzi(null);
+        setSeleccionPinyin(null);
+
+        // 3. El recambio y la limpieza del pozo ocurren en segundo plano a los 400ms
         setTimeout(() => {
           setMesa(prevMesa => {
             let nuevaH = [...prevMesa.hanzi];
             let nuevaP = [...prevMesa.pinyin];
             let nuevoPozo = [...prevMesa.pozo];
 
-            // Vaciamos los huecos del par adivinado
-            const idxH = nuevaH.findIndex(x => x?.id === seleccionHanzi.id);
-            const idxP = nuevaP.findIndex(x => x?.id === seleccionHanzi.id);
+            const idxH = nuevaH.findIndex(x => x?.id === idMatch);
+            const idxP = nuevaP.findIndex(x => x?.id === idMatch);
             if (idxH !== -1) nuevaH[idxH] = null;
             if (idxP !== -1) nuevaP[idxP] = null;
 
-            // Contamos cuántos huecos hay
             const huecos = nuevaH.filter(x => x === null).length;
 
-            // REGLA: Rellenar solo si hay 2 o más huecos (o si quedan pocas en el pozo)
+            // Rellenamos por lotes (solo si se acumulan 2 o más huecos vacíos)
             if (huecos >= 2 || (huecos > 0 && nuevoPozo.length > 0 && nuevoPozo.length <= huecos)) {
               const aExtraer = Math.min(huecos, nuevoPozo.length);
               const cartasNuevas = nuevoPozo.slice(0, aExtraer);
-              nuevoPozo = nuevoPozo.slice(aExtraer); // Quitamos las cartas del pozo
+              nuevoPozo = nuevoPozo.slice(aExtraer);
 
-              // Mezclamos el lote nuevo de forma independiente
               const mixH = [...cartasNuevas].sort(() => Math.random() - 0.5);
               const mixP = [...cartasNuevas].sort(() => Math.random() - 0.5);
 
-              // Rellenamos los huecos de la izquierda (Hanzi)
               let contH = 0;
               for(let i = 0; i < nuevaH.length; i++) {
                 if (nuevaH[i] === null && contH < aExtraer) { nuevaH[i] = mixH[contH]; contH++; }
               }
-              
-              // Rellenamos los huecos de la derecha (Pinyin)
               let contP = 0;
               for(let i = 0; i < nuevaP.length; i++) {
                 if (nuevaP[i] === null && contP < aExtraer) { nuevaP[i] = mixP[contP]; contP++; }
               }
             }
 
-            // Retornamos la mesa perfectamente calculada y sincronizada
             return { hanzi: nuevaH, pinyin: nuevaP, pozo: nuevoPozo };
           });
 
-          // Limpiamos los controles para el siguiente turno
-          setSeleccionHanzi(null);
-          setSeleccionPinyin(null);
-          setEstadoMatch(null);
-          setIdsSaliendo(prev => prev.filter(id => id !== seleccionHanzi.id));
-        }, 600);
+          // Quitamos el ID de la lista de animación
+          setIdsSaliendo(prev => prev.filter(id => id !== idMatch));
+        }, 400); // 400ms calza perfecto con la animación CSS popOut
 
       } else {
-        // ERROR
+        // ERROR: Aquí sí congelamos brevemente para que veas el rojo, 
+        // pero lo bajamos a solo 350ms para que no sea molesto.
         setEstadoMatch('error');
         setErrores(prev => prev + 1);
 
@@ -116,20 +110,22 @@ function JuegoUneHanzi({ hskNivel, volver }) {
           setSeleccionHanzi(null);
           setSeleccionPinyin(null);
           setEstadoMatch(null);
-        }, 700); 
+        }, 350); 
       }
     }
-  }, [seleccionHanzi, seleccionPinyin]); // <-- Solo depende de las selecciones
+  }, [seleccionHanzi, seleccionPinyin]);
 
   // ==========================================
-  // RENDERIZADO VISUAL
+  // ACTUALIZACIÓN DE COLORES DINÁMICOS
   // ==========================================
   const obtenerColorBoton = (item, seleccionActual) => {
     if (!item) return 'transparent';
+    // Si la carta está en proceso de desaparecer (match correcto), se pinta verde al instante
+    if (idsSaliendo.includes(item.id)) return '#84cc16'; 
+    
     if (seleccionActual?.id === item.id) {
-      if (estadoMatch === 'correcto') return '#84cc16'; 
       if (estadoMatch === 'error') return '#ef4444';    
-      return '#b7aff0'; 
+      return '#b7aff0'; // Lavanda esperando pareja
     }
     return 'transparent';
   };
@@ -187,13 +183,13 @@ function JuegoUneHanzi({ hskNivel, volver }) {
               return (
                 <button
                   key={item ? `h_${item.id}` : `h_vacio_${index}`}
-                  disabled={esVacio || estadoMatch !== null}
+                  disabled={esVacio || idsSaliendo.includes(item.id) || estadoMatch === 'error'}
                   onClick={() => setSeleccionHanzi(item)}
                   className={esVacio ? 'hueco-vacio' : (estaSaliendo ? 'carta-sale' : 'carta-entra')}
                   style={{
                     height: '80px', fontSize: '35px', fontWeight: 'bold',
                     backgroundColor: obtenerColorBoton(item, seleccionHanzi),
-                    color: seleccionHanzi?.id === item?.id ? '#28374A' : '#EDE8D8',
+                    color: item && idsSaliendo.includes(item.id) ? '#ffffff' : (seleccionHanzi?.id === item?.id ? '#28374A' : '#EDE8D8'),
                     border: '2px solid #EDE8D8', borderRadius: '12px',
                     cursor: esVacio ? 'default' : 'pointer',
                     transition: 'background-color 0.2s, color 0.2s'
@@ -214,13 +210,13 @@ function JuegoUneHanzi({ hskNivel, volver }) {
               return (
                 <button
                   key={item ? `p_${item.id}` : `p_vacio_${index}`}
-                  disabled={esVacio || estadoMatch !== null}
+                  disabled={esVacio || idsSaliendo.includes(item.id) || estadoMatch === 'error'}
                   onClick={() => setSeleccionPinyin(item)}
                   className={esVacio ? 'hueco-vacio' : (estaSaliendo ? 'carta-sale' : 'carta-entra')}
                   style={{
                     height: '80px', fontSize: '22px',
                     backgroundColor: obtenerColorBoton(item, seleccionPinyin),
-                    color: seleccionPinyin?.id === item?.id ? '#28374A' : '#EDE8D8',
+                    color: item && idsSaliendo.includes(item.id) ? '#ffffff': (seleccionPinyin?.id === item?.id ? '#28374A' : '#EDE8D8'),
                     border: '2px solid #EDE8D8', borderRadius: '12px',
                     cursor: esVacio ? 'default' : 'pointer',
                     transition: 'background-color 0.2s, color 0.2s'
