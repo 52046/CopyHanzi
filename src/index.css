@@ -1,0 +1,18 @@
+/* index.css */
+:root {
+  --color-fondo: #753434;
+  --color-tarjeta: #D3C7AD;
+  --color-texto: #754437;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  background-color: var(--color-fondo);
+  color: var(--color-texto);
+  font-family: sans-serif;
+}

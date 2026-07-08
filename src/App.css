@@ -1,0 +1,69 @@
+/* App.css */
+.pizarra-contenedor {
+  max-width: 600px;
+  margin: 40px auto;
+  padding: 20px;
+  text-align: center;
+}
+
+.tarjeta-hanzi {
+  background-color: var(--color-tarjeta);
+  border-radius: 16px;
+  padding: 30px;
+}
+
+.boton-estudio {
+  background-color: var(--color-acento);
+  color: var(--color-fondo);
+  border: none;
+  padding: 12px 24px;
+  border-radius: 8px;
+  cursor: pointer;
+}
+/* --- ANIMACIÓN 3D PARA LAS FLASHCARDS --- */
+
+/* El contenedor padre da el efecto de profundidad 3D */
+.flashcard-contenedor-3d {
+  perspective: 1000px;
+  width: 100%;
+  max-width: 400px;
+  height: 280px;
+  margin: 0 auto;
+}
+
+/* La tarjeta física que va a rotar */
+.flashcard-interna {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  text-align: center;
+  transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+  transform-style: preserve-3d; /* Clave para el efecto 3D */
+}
+
+/* Esta clase se añade con React cuando 'volteada' sea true */
+.flashcard-interna.girada {
+  transform: rotateY(180deg);
+}
+
+/* Estilo común para ambas caras (Frente y Atrás) */
+.cara-frente, .cara-atras {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  -webkit-backface-visibility: hidden; /* Oculta la otra cara al girar */
+  backface-visibility: hidden;
+  border-radius: 20px;
+  border: 2px solid #EDE8D8;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+}
+
+/* La cara de atrás nace rotada 180 grados por defecto */
+.cara-atras {
+  transform: rotateY(180deg);
+}
