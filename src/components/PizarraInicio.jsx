@@ -4,7 +4,7 @@ import hskData from '../data/hsk.json';
 import Star from '../assets/icon/Stars.svg';
 import Game from '../assets/icon/Game.svg';
 
-function PizarraInicio({ alSiguiente }) {
+function PizarraInicio({ alSiguiente , alMinijuegos }) {
   const [hskSeleccionado, setHskSeleccionado] = useState('1');
   
   // --- ESTADOS PARA EL MODAL FLOTANTE ---
@@ -85,8 +85,8 @@ function PizarraInicio({ alSiguiente }) {
         
         <div ref={contenedorHanzi} onClick={relanzarAnimacion} style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', margin: '25px auto', cursor: 'pointer', width: 'max-content', minHeight: '140px' }} title="¡Haz clic para ver cómo se escribe!" />
         <h2 style={{ color: '#28374A', margin: '5px 0', fontWeight: 'bold', letterSpacing: '0.5px' }}>{hanziDelDia.p}</h2>
-        <p style={{ fontSize: '20px', color: '#28374A', opacity: 0.8, margin: '15px 0 0 0' }}>
-          Significado: <strong style={{ color: '#754437' }}>{hanziDelDia.s}</strong>
+        <p style={{ fontSize: '20px', color: '#28374A', margin: '15px 0 0 0', color: '#753434', fontWeight: '600' }}>
+          {hanziDelDia.s} 
         </p>
       </div>
 
@@ -113,11 +113,10 @@ function PizarraInicio({ alSiguiente }) {
         >
           <img src={Star} alt="Flashcards" style={{ width: '35px', height: '35px' }} />
           <h4 style={{ margin: '12px 0 5px 0', fontSize: '18px', color: '#ede8d8', fontWeight: '700' }}>Modo Flashcards</h4>
-          <p style={{ fontSize: '12px', color: '#ede8d8', margin: 0 }}>Estudia a tu propio ritmo</p>
         </button>
 
         <button 
-          onClick={() => alert(`Cargando Minijuegos de HSK ${hskSeleccionado}...`)}
+          onClick={() => alMinijuegos(hskSeleccionado)} // <-- Reemplaza el alert por esto
           style={{ padding: '25px', borderRadius: '15px', border: '2px solid #ede8d8', background: 'transparent', cursor: 'pointer' }}
         >
           <img src={Game} alt="Minijuegos" style={{ width: '35px', height: '35px' }} />
@@ -137,10 +136,10 @@ function PizarraInicio({ alSiguiente }) {
 
             {/* FILA 1: MODOS DE JUEGO */}
             <div style={{ marginBottom: '25px', textAlign: 'left' }}>
-              <label style={{ color: '#EDE8D8', fontSize: '14px', opacity: 0.8, display: 'block', marginBottom: '10px', fontWeight: 'bold' }}>1. MODO DE REPASO:</label>
+              <label style={{ color: '#EDE8D8', fontSize: '14px', opacity: 0.8, display: 'block', marginBottom: '10px', fontWeight: 'bold' }}>1. MODO FLASHCARD:</label>
               <div style={{ display: 'flex', gap: '10px' }}>
-                <button onClick={() => setModoConfig('desafio')} style={{ flex: 1, padding: '12px', borderRadius: '10px', border: '2px solid #EDE8D8', fontWeight: 'bold', cursor: 'pointer', backgroundColor: modoConfig === 'desafio' ? '#EDE8D8' : 'transparent', color: modoConfig === 'desafio' ? '#753434' : '#EDE8D8' }}>🎯 Desafío (Escribir)</button>
-                <button onClick={() => setModoConfig('repaso')} style={{ flex: 1, padding: '12px', borderRadius: '10px', border: '2px solid #EDE8D8', fontWeight: 'bold', cursor: 'pointer', backgroundColor: modoConfig === 'repaso' ? '#EDE8D8' : 'transparent', color: modoConfig === 'repaso' ? '#753434' : '#EDE8D8' }}>📖 Repaso (Libre)</button>
+                <button onClick={() => setModoConfig('desafio')} style={{ flex: 1, padding: '12px', borderRadius: '10px', border: '2px solid #EDE8D8', fontWeight: 'bold', cursor: 'pointer', backgroundColor: modoConfig === 'desafio' ? '#EDE8D8' : 'transparent', color: modoConfig === 'desafio' ? '#753434' : '#EDE8D8' }}>Desafío</button>
+                <button onClick={() => setModoConfig('repaso')} style={{ flex: 1, padding: '12px', borderRadius: '10px', border: '2px solid #EDE8D8', fontWeight: 'bold', cursor: 'pointer', backgroundColor: modoConfig === 'repaso' ? '#EDE8D8' : 'transparent', color: modoConfig === 'repaso' ? '#753434' : '#EDE8D8' }}>Repaso</button>
               </div>
             </div>
 
@@ -158,15 +157,15 @@ function PizarraInicio({ alSiguiente }) {
             <div style={{ marginBottom: '35px', textAlign: 'left' }}>
               <label style={{ color: '#EDE8D8', fontSize: '14px', opacity: 0.8, display: 'block', marginBottom: '10px', fontWeight: 'bold' }}>3. TIPO DE SESIÓN:</label>
               <div style={{ display: 'flex', gap: '10px' }}>
-                <button onClick={() => setBucleConfig(false)} style={{ flex: 1, padding: '12px', borderRadius: '10px', border: '2px solid #EDE8D8', fontWeight: 'bold', cursor: 'pointer', backgroundColor: !bucleConfig ? '#EDE8D8' : 'transparent', color: !bucleConfig ? '#753434' : '#EDE8D8' }}>⏹️ Modo Normal (Terminar)</button>
-                <button onClick={() => setBucleConfig(true)} style={{ flex: 1, padding: '12px', borderRadius: '10px', border: '2px solid #EDE8D8', fontWeight: 'bold', cursor: 'pointer', backgroundColor: bucleConfig ? '#EDE8D8' : 'transparent', color: bucleConfig ? '#753434' : '#EDE8D8' }}>🔄 Modo Bucle (Repetir)</button>
+                <button onClick={() => setBucleConfig(false)} style={{ flex: 1, padding: '12px', borderRadius: '10px', border: '2px solid #EDE8D8', fontWeight: 'bold', cursor: 'pointer', backgroundColor: !bucleConfig ? '#EDE8D8' : 'transparent', color: !bucleConfig ? '#753434' : '#EDE8D8' }}>Modo Normal</button>
+                <button onClick={() => setBucleConfig(true)} style={{ flex: 1, padding: '12px', borderRadius: '10px', border: '2px solid #EDE8D8', fontWeight: 'bold', cursor: 'pointer', backgroundColor: bucleConfig ? '#EDE8D8' : 'transparent', color: bucleConfig ? '#753434' : '#EDE8D8' }}>Modo Bucle</button>
               </div>
             </div>
 
             {/* ACCIONES DEL MODAL */}
             <div style={{ display: 'flex', gap: '15px' }}>
               <button onClick={() => setMostrarModal(false)} style={{ flex: 1, padding: '12px', borderRadius: '10px', border: '2px solid #EDE8D8', backgroundColor: 'transparent', color: '#EDE8D8', fontWeight: 'bold', cursor: 'pointer' }}>Cancelar</button>
-              <button onClick={iniciarMazo} style={{ flex: 1, padding: '12px', borderRadius: '10px', border: 'none', backgroundColor: '#EDE8D8', color: '#753434', fontWeight: 'bold', cursor: 'pointer' }}>¡Comenzar! 🚀</button>
+              <button onClick={iniciarMazo} style={{ flex: 1, padding: '12px', borderRadius: '10px', border: 'none', backgroundColor: '#EDE8D8', color: '#753434', fontWeight: 'bold', cursor: 'pointer' }}>Comenzar</button>
             </div>
 
           </div>
