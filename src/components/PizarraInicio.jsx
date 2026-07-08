@@ -80,7 +80,7 @@ function PizarraInicio({ alSiguiente }) {
       <div style={{ borderRadius: '20px', padding: '35px', marginBottom: '40px', backgroundColor: '#ede8d8', boxShadow: '0 15px 35px -10px rgba(0,0,0,0.15)', position: 'relative' }}>
         <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '6px', backgroundColor: '#6B6751' }}></div>
         <span style={{ color: '#6B6751', fontSize: '20px', fontWeight: 'bold', letterSpacing: '1px', textTransform: 'uppercase' }}>
-          Hanzi del Día ({hanziDelDia.level || hanziDelDia.cat || '?'})
+          Palabra del Día ({hanziDelDia.level || hanziDelDia.cat || '?'})
         </span>
         
         <div ref={contenedorHanzi} onClick={relanzarAnimacion} style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', margin: '25px auto', cursor: 'pointer', width: 'max-content', minHeight: '140px' }} title="¡Haz clic para ver cómo se escribe!" />
